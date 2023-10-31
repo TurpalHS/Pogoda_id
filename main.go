@@ -7,16 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/main.go/servis"
 )
 
-type Responce struct {
-	Main Main
-}
 
-type Main struct {
-	Temp     float64 `json:"temp"`
-	Humidity int     `json:"humidity"`
-}
 
 func main() {
 	fmt.Println("Дарова, Заебал")
@@ -38,15 +33,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var pogoda Responce
+	result := &modeli.Responce{}
 
-	err = json.Unmarshal(body, &pogoda)
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	tempCels := pogoda.Main.Temp
-	vlagaProcent := pogoda.Main.Humidity
+	isSucses := servis.PogodaGoroda(*result)
+	if !isSucses {
+		fmt.Println(err)
+	}
+	tempCels := result.Main.Temp
+	vlagaProcent := result.Main.Humidity
 
 	fmt.Printf("Температура в городе: %.2f °C \n", tempCels)
 	fmt.Printf("Влажность погоды: %d %% \n", vlagaProcent)
